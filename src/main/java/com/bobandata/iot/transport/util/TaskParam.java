@@ -15,7 +15,6 @@ public class TaskParam implements ITaskParam{
     private String restPath;    //规约MasterProtocol启动类路径
     private int taskType;       //规约下的指令
     private IChannel channel;
-    private List list;
     private int rad;
 
     public int getStartMark() {
@@ -88,14 +87,6 @@ public class TaskParam implements ITaskParam{
 
     public void setChannel(IChannel channel) {
         this.channel = channel;
-    }
-
-    public List getList() {
-        return list;
-    }
-
-    public void setList(List list) {
-        this.list = list;
     }
 
     public int getRad() {

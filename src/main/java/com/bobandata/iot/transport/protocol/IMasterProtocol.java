@@ -3,6 +3,8 @@ package com.bobandata.iot.transport.protocol;
 import com.bobandata.iot.transport.frame.IFrame;
 import com.bobandata.iot.transport.util.TaskParam;
 
+import javax.websocket.Session;
+
 /**
  * @Author: lizhipeng
  * @Description: 主站规约接口
@@ -12,6 +14,7 @@ import com.bobandata.iot.transport.util.TaskParam;
 public abstract class IMasterProtocol implements IProtocol{
     private TaskParam taskParam = new TaskParam();
 
+    public abstract void init(TaskParam taskParam , Session session) throws Exception;
     public abstract void executeTask(TaskParam taskParam ) throws Exception;
 
     public abstract IFrame sendMsg(IFrame request);

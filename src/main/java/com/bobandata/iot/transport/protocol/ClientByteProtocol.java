@@ -4,10 +4,11 @@ import com.bobandata.iot.transport.coder.ByteToMessageDecoder;
 import com.bobandata.iot.transport.coder.MessageToByteEncoder;
 import com.bobandata.iot.transport.connector.handler.HeartBeatReqHandler;
 import com.bobandata.iot.transport.frame.IFrame;
-import com.bobandata.iot.transport.protocol.IProtocol;
 import com.bobandata.iot.transport.util.TaskParam;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
+
+import javax.websocket.Session;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -41,6 +42,11 @@ public class ClientByteProtocol extends IMasterProtocol {
         pipeline.addLast(new HeartBeatReqHandler());
     }
 
+
+    @Override
+    public void init(TaskParam taskParam, Session session) throws Exception {
+
+    }
 
     @Override
     public void executeTask(TaskParam taskParam) throws Exception {

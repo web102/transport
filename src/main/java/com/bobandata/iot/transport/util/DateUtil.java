@@ -468,7 +468,7 @@ public class DateUtil {
         String dateSrt = Integer.toHexString(by&0xFF);
         int month = Integer.parseInt(dateSrt.substring(0,1), 16);
         int year = Integer.parseInt(dateSrt.substring(1,2), 16);
-        Date date = StringToDate("20" + year + "-" + month, DateStyle.YYYY_MM);
+        Date date = StringToDate(2000 + year + "-" + month, DateStyle.YYYY_MM);
         return date;
     }
 

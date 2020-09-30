@@ -149,8 +149,43 @@ public class HexUtils {
         return b & 0xFF;
     }
 
-    public static void main(String[] args) {
-        byte b = 26;
-        System.out.print(byteToInt(b));
+
+    public static byte[] numberToBytes(long number,int size,boolean end){
+        byte[] bytes = new byte[size];
+        String hex = Long.toHexString(number);
+        hex = hex.length()%2==0?hex:"0"+hex;
+
+        int i =0;
+        while (hex.length()>0&&i<size){
+            String b;
+            if(hex.length()==1){
+                b=hex;
+                hex="";
+            }else {
+                if(end) {
+                    b = hex.substring(hex.length() - 2);
+                    hex = hex.substring(0, hex.length() - 2);
+                }else {
+                    b = hex.substring(0,2);
+                    hex = hex.substring(2);
+                }
+            }
+            bytes[i++] = Byte.valueOf(b,16);
+        }
+        return bytes;
+    }
+
+    public static long bytesToLong(byte[] bytes,boolean end){
+        StringBuilder a = new StringBuilder();
+        for (byte aByte : bytes) {
+            String b = Integer.toString(aByte, 16);
+            b = b.length() % 2 == 0 ? b : "0" + b;
+            if (!end) {
+                a.append(b);
+            } else {
+                a.insert(0, b);
+            }
+        }
+        return Long.valueOf(a.toString(),16);
     }
 }
