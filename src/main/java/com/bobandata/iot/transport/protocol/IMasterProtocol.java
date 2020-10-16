@@ -17,7 +17,7 @@ public abstract class IMasterProtocol implements IProtocol{
     public abstract void init(TaskParam taskParam , Session session) throws Exception;
     public abstract void executeTask(TaskParam taskParam ) throws Exception;
 
-    public abstract IFrame sendMsg(IFrame request);
+    public abstract IFrame sendMsg(IFrame request) throws Exception;
 
     public TaskParam getTaskParam() {
         return taskParam;

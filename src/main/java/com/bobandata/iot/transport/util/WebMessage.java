@@ -12,8 +12,8 @@ public class WebMessage {
     private String infoHex;          //请求报文 16进制字符串
     private String infoExplain;      //请求报文 解析
 
-    public WebMessage(int code, String message){
-        this.code=code;
+    public WebMessage(WebMessage.Code code, String message){
+        this.code=code.code;
         this.message=message;
     }
 

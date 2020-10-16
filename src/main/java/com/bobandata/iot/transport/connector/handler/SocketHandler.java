@@ -1,13 +1,13 @@
 package com.bobandata.iot.transport.connector.handler;
 
 import com.bobandata.iot.transport.connector.SocketAdapter;
-import com.bobandata.iot.transport.protocol.IMasterProtocol;
-import com.bobandata.iot.transport.util.EmptyUtil;
 import io.netty.channel.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: lizhipeng
@@ -16,59 +16,35 @@ import org.slf4j.LoggerFactory;
  * @Date: Created in 11:55 2018/12/3.
  */
 @ChannelHandler.Sharable
-public class SocketHandler extends ChannelInboundHandlerAdapter {
+public class SocketHandler extends ChannelInboundHandlerAdapter  {
     private static final Logger logger = LoggerFactory.getLogger(SocketHandler.class);
     private ChannelHandlerContext ctx;
-    private ChannelPromise promise;
-    private Object data;
-    private AtomicInteger count = new AtomicInteger(0);
-    public static AtomicInteger atomicInteger = new AtomicInteger(0);
+    private LinkedBlockingQueue<Object> queue =  new LinkedBlockingQueue<>(1);
     private SocketAdapter imConnection;
 
     public SocketHandler(SocketAdapter imConnection){
         this.imConnection = imConnection;
     }
 
+
+
+    @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.ctx = ctx;
     }
 
-    public ChannelPromise sendMessage(Object message){
-        int tryCount = this.count.get();
-        if (this.ctx == null) {
-            try {
-                Thread.sleep(3000L);
-            } catch (InterruptedException e) {
-                logger.error("TCP REQUEST EXCEPTION ..."+e.getMessage());
-            }
-            this.count.incrementAndGet();
-            return tryCount <= 3 ? sendMessage(message) : null;
-        }
-        this.count = new AtomicInteger(0);
-        Channel channel = this.ctx.writeAndFlush(message).channel();
-        if(channel.isActive() || channel.isOpen()){
-            this.promise =  channel.newPromise();
-        }
-        return this.promise;
+    public void sendMessage(Object message){
+        this.ctx.writeAndFlush(message);
     }
 
-    public Object getData() {
-        Object data = this.data;
-        this.data=null;
-        return data;
+    public Object getData() throws InterruptedException {
+        return queue.poll(15, TimeUnit.SECONDS);
     }
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        if (EmptyUtil.isNotEmpty(msg) && this.promise != null) {
-            this.data = msg;
-            atomicInteger.incrementAndGet();
-            try{
-                this.promise.setSuccess();
-            }catch (Exception e){
-//                logger.error("PROMISE SET FAIL..."+e.getMessage());
-            }
-        }
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception{
+        this.queue.poll();
+        this.queue.add(msg);
     }
 
     @Override
@@ -86,10 +62,4 @@ public class SocketHandler extends ChannelInboundHandlerAdapter {
 //        }, 5L, TimeUnit.SECONDS);
 //        super.channelInactive(ctx);
     }
-
-
-    public static AtomicInteger getPosition(){
-        return atomicInteger;
-    }
-
 }

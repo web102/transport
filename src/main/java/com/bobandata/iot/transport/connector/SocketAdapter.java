@@ -3,16 +3,16 @@
  import com.bobandata.iot.transport.connector.handler.SocketHandler;
  import com.bobandata.iot.transport.connector.listener.ConnectionListener;
  import com.bobandata.iot.transport.protocol.IMasterProtocol;
- import com.bobandata.iot.transport.protocol.IProtocol;
  import com.bobandata.iot.transport.util.FinalConst;
  import io.netty.bootstrap.Bootstrap;
  import io.netty.channel.*;
  import io.netty.channel.nio.NioEventLoopGroup;
  import io.netty.channel.socket.nio.NioSocketChannel;
- import java.net.InetSocketAddress;
  import io.netty.util.concurrent.DefaultThreadFactory;
  import org.slf4j.Logger;
  import org.slf4j.LoggerFactory;
+
+ import java.net.InetSocketAddress;
 
  /**
   * @Author: lizhipeng
@@ -93,27 +93,15 @@ public class SocketAdapter implements IChannel{
       * @param message
       * @return
       */
-    public Object getBody(Object message)
-    {
-     Object data = null;
-     ChannelPromise promise = this.socketHandler.sendMessage(message);
-     if(promise != null){
-         try {
-             promise.await(15000L);
-         } catch (InterruptedException e) {
-             logger.error("TCP REQUEST EXCEPTION ..."+e.getMessage());
-         }
-         if(promise.isSuccess()) {
-             data = this.socketHandler.getData();
-             return data;
-         }else{
-             data = this.socketHandler.getData();
-             if(data != null){
-                 return data;
-             }
-         }
-     }
-     return data;
+    public Object getBody(Object message) {
+        this.socketHandler.sendMessage(message);
+        try {
+            return this.socketHandler.getData();
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
      public String getHostname() {
